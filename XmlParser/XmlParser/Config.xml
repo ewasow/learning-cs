@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  
+  <configSections>
+    <section name="myTableNames" type="System.Configuration.NameValueSectionHandler" />
+    <section name="myTableColumns" type="System.Configuration.NameValueSectionHandler" />
+  </configSections>
+
+  <!--Lista nazw tablic dla których można zdefiniować typy i statusy w liście Statuses and Types -->
+  <connectionStrings>
+    <add name="proMemoria.Properties.Settings.matrixConnectionString" connectionString="server=localhost;user id=morpheus;persistsecurityinfo=True;database=matrix;allowuservariables=True" providerName="MySql.Data.MySqlClient" />
+  </connectionStrings>
+  <myTableNames>
+    <add key="setting1" value="employees" />
+    <add key="setting2" value="projects" />
+    <add key="setting3" value="project_teams" />
+  </myTableNames>
+
+  <!--Lista kolumn dla których można zdefiniować wartości w liście Statuses and Types -->
+  <myTableColumns>
+    <add key="setting1" value="status" />
+    <add key="setting2" value="project_type" />
+    <add key="setting3" value="customer" />
+    <add key="setting4" value="role" />
+    <add key="setting5" value="scope" />
+    <add key="setting6" value="type" />
+  </myTableColumns>
+
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5" />
+  </startup>
+
+  <appSettings>
+    <add key="server" value="localhost" />
+    <add key="instance" value="matrix" />
+    <add key="reports_dir" value="C:\Users\marku\Documents\\Reports" />
+  </appSettings>
+
+  <runtime>
+
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+
+      <dependentAssembly>
+
+        <assemblyIdentity name="itextsharp" publicKeyToken="8354ae6d2174ddca" culture="neutral" />
+
+        <bindingRedirect oldVersion="0.0.0.0-5.5.8.0" newVersion="5.5.8.0" />
+
+      </dependentAssembly>
+
+    </assemblyBinding>
+
+  </runtime>
+</configuration>
