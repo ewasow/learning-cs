@@ -14,23 +14,48 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MessParser
+namespace Mess
 {
-    public class InputFile
+    public partial class MainWindow : Window
     {
-        public string inputPath;
+        private string filePath;
+        System.Collections.Specialized.StringCollection propertiesLastFile = Mess.Properties.Settings.Default.LastFile;       
 
-        public InputFile(string path)
-        {
-            this.inputPath = path;
-        }
-    }
-
-    public partial class MainWindow
-    {
         public MainWindow()
         {
             InitializeComponent();
+            //Properties.Settings.Default.Reset();
+
+            for (int i = 0; i < 5; i++)
+            {
+                var newMenuItem = new MenuItem();
+                newMenuItem.Header = propertiesLastFile[i];
+                newMenuItem.Click += new RoutedEventHandler(MenuItem_OpenRecent_Click);
+                OpenRecent.Items.Add(newMenuItem);
+            }
+        }
+
+        private void LoadToTextBox(string path)
+        {
+            var content = File.ReadAllText(path);
+            tbContent.Text = content;
+        }
+
+        private void MenuItem_OpenRecent_Click(object sender, RoutedEventArgs e)
+        {
+            var a = e.OriginalSource.ToString();
+            int indexStart = a.IndexOf("Header:") + 7;
+            int indexStop = a.IndexOf("Items") - 1;
+            a = a.Remove(indexStop);
+            filePath = a.Substring(indexStart);
+            LoadToTextBox(filePath);
+
+            if (propertiesLastFile.Contains(filePath))
+            {
+                propertiesLastFile.Remove(filePath);                 
+            }
+            propertiesLastFile.Insert(0, filePath);
+            Mess.Properties.Settings.Default.Save();            
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
@@ -38,21 +63,27 @@ namespace MessParser
             this.Close();
         }
 
-        public void MenuItem_Open_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_Open_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
-
             dialog.DefaultExt = ".txt";
             dialog.Filter = "TXT Files (*.txt)|*.txt";
 
             bool? result = dialog.ShowDialog();
             if (result == true)
             {
-                var filename = new InputFile(dialog.FileName);                
-                var content = File.ReadAllText(filename.inputPath);
-                tbContent.Text = content;
-                MessParser.Properties.Settings.Default.LastFile = filename.inputPath;   
-                MessParser.Properties.Settings.Default.Save();             
+                filePath = dialog.FileName;
+                LoadToTextBox(filePath);
+                if (propertiesLastFile.Count >= 5)
+                {
+                    propertiesLastFile.RemoveAt(4);
+                }
+                if (propertiesLastFile.Contains(filePath))
+                {
+                    propertiesLastFile.Remove(filePath);
+                }
+                propertiesLastFile.Insert(0, filePath);
+                Mess.Properties.Settings.Default.Save();                  
             }
         }
 
@@ -63,8 +94,8 @@ namespace MessParser
         }
 
         private void MenuItem_Save_Click(object sender, RoutedEventArgs e)
-        {            
-            //File.WriteAllText();
+        {
+            File.WriteAllText(filePath, tbContent.Text);
         }
 
         private void MenuItem_SaveAs_Click(object sender, RoutedEventArgs e)
@@ -76,17 +107,6 @@ namespace MessParser
             {
                 File.WriteAllText(dialog.FileName, tbContent.Text);
             }
-        }
-
-        private void MenuItem_RecentFile_Click(object sender, RoutedEventArgs e)
-        {
-            var lastFile = MessParser.Properties.Settings.Default.LastFile;
-            if (lastFile == "(empty)")
-            {
-                return;
-            }
-            var content = File.ReadAllText(lastFile);
-            tbContent.Text = content;
         }
     }
 }
